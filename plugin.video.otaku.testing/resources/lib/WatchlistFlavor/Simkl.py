@@ -1,4 +1,3 @@
-import xbmc
 import pickle
 import random
 import json
@@ -47,7 +46,7 @@ class SimklWLF(WatchlistFlavorBase):
             if control.progressDialog.iscanceled():
                 control.progressDialog.close()
                 return
-            xbmc.sleep(device_code['interval'] * 1000)
+            control.sleep(device_code['interval'] * 1000)
 
             r = client.request(f'{self._URL}/oauth/pin/{device_code["user_code"]}', params=params)
             r = json.loads(r) if r else {}
@@ -185,16 +184,16 @@ class SimklWLF(WatchlistFlavorBase):
         mal_id = show_ids.get('mal')
         kitsu_id = show_ids.get('kitsu')
         dub = True if mal_dub and mal_dub.get(str(mal_id)) else False
-    
+
         progress = res['watched_episodes_count']
         next_up = progress + 1
         episode_count = res["total_episodes_count"]
-    
+
         if 0 < episode_count < next_up:
             return
-    
+
         base_title = res['show']['title']
-    
+
         title = '%s - %s/%s' % (base_title, next_up, episode_count)
         poster = image = f'https://wsrv.nl/?url=https://simkl.in/posters/{res["show"]["poster"]}_m.jpg'
         mal_id, next_up_meta, show = self._get_next_up_meta(mal_id, int(progress))
@@ -211,7 +210,7 @@ class SimklWLF(WatchlistFlavorBase):
             aired = next_up_meta.get('aired')
         else:
             plot = aired = None
-    
+
         info = {
             'UniqueIDs': {'anilist_id': str(anilist_id), 'mal_id': str(mal_id), 'kitsu_id': str(kitsu_id)},
             'episode': next_up,
@@ -223,7 +222,7 @@ class SimklWLF(WatchlistFlavorBase):
             'last_watched': res['last_watched_at'],
             'user_rating': res['user_rating']
         }
-    
+
         base = {
             "name": title,
             "url": f'watchlist_to_ep/{mal_id}/{res["watched_episodes_count"]}',
@@ -232,7 +231,7 @@ class SimklWLF(WatchlistFlavorBase):
             "fanart": image,
             "poster": poster
         }
-    
+
         show_meta = database.get_show_meta(mal_id)
         if show_meta:
             art = pickle.loads(show_meta['art'])
@@ -244,16 +243,16 @@ class SimklWLF(WatchlistFlavorBase):
                 base['clearart'] = random.choice(art['clearart'])
             if art.get('clearlogo'):
                 base['clearlogo'] = random.choice(art['clearlogo'])
-    
+
         if res["total_episodes_count"] == 1:
             base['url'] = f'play_movie/{mal_id}/'
             base['info']['mediatype'] = 'movie'
             return utils.parse_view(base, False, True, dub)
-    
+
         if next_up_meta:
             base['url'] = 'play/%d/%d' % (int(mal_id), int(next_up))
             return utils.parse_view(base, False, True, dub)
-    
+
         return utils.parse_view(base, True, False, dub)
 
     @staticmethod

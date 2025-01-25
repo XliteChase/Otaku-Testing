@@ -1,10 +1,10 @@
 import time
 import os
 import json
+import urllib.request
+import urllib.error
 
-from resources.lib.ui import control, client, database_sync, database
-from six.moves import urllib_request, urllib_error
-
+from resources.lib.ui import control, client, database_sync
 
 
 def refresh_apis():
@@ -44,11 +44,11 @@ def update_mappings_db():
     control.log("### Updating Mappings")
     url = 'https://github.com/Goldenfreddy0703/Otaku-Mappings/raw/refs/heads/main/anime_mappings.db'
     try:
-        response = urllib_request.urlopen(url)
+        response = urllib.request.urlopen(url)
         with open(os.path.join(control.dataPath, 'mappings.db'), 'wb') as file:
             file.write(response.read())
         control.log("### Mappings updated successfully")
-    except urllib_error.URLError as e:
+    except urllib.error.URLError as e:
         control.log(f"### Failed to update mappings: {e}")
 
 

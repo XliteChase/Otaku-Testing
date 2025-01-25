@@ -1,5 +1,4 @@
 import time
-import xbmc
 import json
 
 from resources.lib.ui import client, control, source_utils
@@ -64,7 +63,7 @@ class RealDebrid:
         auth_done = False
         while not auth_done and self.OauthTimeout > 0:
             self.OauthTimeout -= self.OauthTimeStep
-            xbmc.sleep(self.OauthTimeStep * 1000)
+            control.sleep(self.OauthTimeStep * 1000)
             auth_done = self.auth_loop()
         control.progressDialog.close()
         if auth_done:
@@ -149,9 +148,6 @@ class RealDebrid:
     def deleteTorrent(self, torrent_id):
         response = client.request(f'{self.BaseUrl}/torrents/delete/{torrent_id}', headers=self.headers(), method='DELETE')
         return response is not None
-
-    def resolve_single_magnet(self, hash_, magnet, episode, pack_select=False):
-        pass
 
     @staticmethod
     def resolve_cloud(source, pack_select):

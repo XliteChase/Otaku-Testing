@@ -4,8 +4,9 @@ import json
 import os
 import math
 import time
+import urllib.request
+import urllib.parse
 
-from six.moves import urllib_request, urllib_parse
 from resources.lib.windows.base_window import BaseWindow
 from resources.lib.ui import database, control
 
@@ -199,7 +200,7 @@ class Manager:
         self.output_filename = filename
         if self.output_filename is None:
             self.output_filename = url.split("/")[-1]
-            self.output_filename = urllib_parse.unquote(self.output_filename)
+            self.output_filename = urllib.parse.unquote(self.output_filename)
         self.output_path = os.path.join(self.storage_location, self.output_filename)
 
         yesno = control.yesno_dialog(control.ADDON_NAME, f'''
@@ -219,13 +220,13 @@ class Manager:
         self.status = "downloading"
 
         # Use urllib.request to get the headers
-        request = urllib_request.Request(url, method='HEAD')
-        head = urllib_request.urlopen(request)
+        request = urllib.request.Request(url, method='HEAD')
+        head = urllib.request.urlopen(request)
         self.file_size = int(head.getheader("content-length", None))
         self.file_size_display = self.get_display_size(self.file_size)
 
         # Use urllib.request to get the content
-        response = urllib_request.urlopen(url)
+        response = urllib.request.urlopen(url)
         chunks = iter(lambda: response.read(1024 * 1024 * 8), b'')
 
         control.notify(control.ADDON_NAME, 'Download Started')

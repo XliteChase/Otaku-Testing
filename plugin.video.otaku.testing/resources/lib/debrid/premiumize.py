@@ -1,8 +1,7 @@
-import xbmc
 import json
+import urllib.parse
 
 from resources.lib.ui import source_utils, client, control
-from six.moves import urllib_parse
 
 
 class Premiumize:
@@ -38,7 +37,7 @@ class Premiumize:
         auth_done = False
         while not auth_done and self.OauthTimeout > 0:
             self.OauthTimeout -= self.OauthTimeStep
-            xbmc.sleep(self.OauthTimeStep * 1000)
+            control.sleep(self.OauthTimeStep * 1000)
             auth_done = self.auth_loop(resp['device_code'])
         control.progressDialog.close()
 
@@ -73,7 +72,7 @@ class Premiumize:
             if token.get('error') == 'access_denied':
                 self.OauthTimeout = 0
             if token.get('error') == 'slow_down':
-                xbmc.sleep(1000)
+                control.sleep(1000)
         return False
 
     def search_folder(self, query):
@@ -87,7 +86,7 @@ class Premiumize:
         return json.loads(r)['content'] if r else None
 
     def hash_check(self, hashlist):
-        params = urllib_parse.urlencode([('items[]', hash) for hash in hashlist])
+        params = urllib.parse.urlencode([('items[]', hash) for hash in hashlist])
         url = f'{self.base_url}/cache/check?{params}'
         r = client.request(url, headers=self.headers())
         return json.loads(r) if r else None

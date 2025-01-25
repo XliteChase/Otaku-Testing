@@ -1,8 +1,6 @@
-import xbmc
 import json
-
+import urllib.parse
 from resources.lib.ui import client, control, source_utils
-from six.moves import urllib_parse
 
 
 class AllDebrid:
@@ -32,12 +30,12 @@ class AllDebrid:
         # Seems the All Debrid servers need some time do something with the pin before polling
         # Polling too early will cause an invalid pin error
 
-        xbmc.sleep(5000)
+        control.sleep(5000)
 
         auth_done = False
         while not auth_done and self.OauthTimeout > 0:
             self.OauthTimeout -= self.OauthTimeStep
-            xbmc.sleep(self.OauthTimeStep * 1000)
+            control.sleep(self.OauthTimeStep * 1000)
             auth_done = self.auth_loop(check=resp['check'], pin=resp['pin'])
         control.progressDialog.close()
         if auth_done:
@@ -116,7 +114,7 @@ class AllDebrid:
             'apikey': self.token,
             'link[]': link
         }
-        encoded_params = urllib_parse.urlencode(params, doseq=True)
+        encoded_params = urllib.parse.urlencode(params, doseq=True)
         url = f'{self.base_url}/link/infos?{encoded_params}'
         r = client.request(url)
         return json.loads(r)['data'] if r else None
