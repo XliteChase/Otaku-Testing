@@ -257,10 +257,10 @@ def request(
                     except:
                         if 'return' in error:
                             # Give up
-                            return '{}'
+                            return ''
                         else:
                             if not error:
-                                return '{}'
+                                return ''
                 elif any(x == error_code for x in [403, 429, 503]) and any(x in result for x in ['__cf_chl_f_tk', '__cf_chl_jschl_tk__=', '/cdn-cgi/challenge-platform/']):
                     url_parsed = urllib.parse.urlparse(url)
                     netloc = '%s://%s/' % (url_parsed.scheme, url_parsed.netloc)
@@ -269,7 +269,7 @@ def request(
                         if cf_cookie is None:
                             control.log('%s has an unsolvable Cloudflare challenge.' % (netloc))
                             if not error:
-                                return '{}'
+                                return ''
                         _headers['Cookie'] = cf_cookie
                         _headers['User-Agent'] = cf_ua
                         req = urllib.request.Request(url, data=post)
@@ -278,12 +278,12 @@ def request(
                     else:
                         control.log('%s has a Cloudflare challenge.' % (netloc))
                         if not error:
-                            return '{}'
+                            return ''
                 else:
                     if error is True:
                         return result
                     else:
-                        return '{}'
+                        return ''
             elif server and 'ddos-guard' in server.lower() and e.code == 403:
                 url_parsed = urllib.parse.urlparse(url)
                 netloc = '%s://%s/' % (url_parsed.scheme, url_parsed.netloc)
@@ -292,7 +292,7 @@ def request(
                     if ddg_cookie is None:
                         control.log('%s has an unsolvable DDos-Guard challenge.' % (netloc))
                         if not error:
-                            return '{}'
+                            return ''
                     _headers['Cookie'] = ddg_cookie
                     _headers['User-Agent'] = ddg_ua
                     req = urllib.request.Request(url, data=post)
@@ -301,17 +301,17 @@ def request(
                 else:
                     control.log('%s has a DDoS-Guard challenge.' % (netloc))
                     if not error:
-                        return '{}'
+                        return ''
             elif output == '':
                 control.log('Request-HTTPError (%s): %s' % (e.code, url))
                 if not error:
-                    return '{}'
+                    return ''
         except urllib.error.URLError as e:
             response = e
             if output == '':
                 control.log('Request-Error (%s): %s' % (e.reason, url))
                 if not error:
-                    return '{}'
+                    return ''
 
         if output == 'cookie':
             try:

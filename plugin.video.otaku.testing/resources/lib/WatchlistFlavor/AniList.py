@@ -35,8 +35,8 @@ class AniListWLF(WatchlistFlavorBase):
         }
 
         r = client.request(self._URL, headers=self.__headers(), post={'query': query, 'variables': variables}, jpost=True)
-        results = json.loads(r) if r else {}
-        if "errors" in results.keys():
+        results = json.loads(r) if r else None
+        if results is None:
             control.setSetting('anilist.token', '')
             control.setSetting('anilist.username', '')
             return

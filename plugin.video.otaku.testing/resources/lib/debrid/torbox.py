@@ -22,8 +22,8 @@ class TorBox:
 
     def status(self):
         r = client.request(f'{self.BaseUrl}/user/me', headers=self.headers())
-        if r:
-            user_info = json.loads(r)['data']
+        user_info = json.loads(r)['data'] if r else None
+        if user_info:
             control.setSetting('torbox.username', user_info['email'])
             if user_info['plan'] == 0:
                 control.setSetting('torbox.auth.status', 'Free')
@@ -35,7 +35,7 @@ class TorBox:
             elif user_info['plan'] == 2:
                 control.setSetting('torbox.auth.status', 'Pro')
             control.ok_dialog(control.ADDON_NAME, f'TorBox {control.lang(30023)}')
-        return r is not None
+        return user_info is not None
 
     def refreshToken(self):
         pass

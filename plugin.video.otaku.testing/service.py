@@ -83,6 +83,9 @@ def update_dub_json():
             mal_dub_list = json.loads(response)["dubbed"]
             mal_dub = {str(item): {'dub': True} for item in mal_dub_list}
             json.dump(mal_dub, file)
+            control.log("### Dubs updated successfully")
+        else:
+            control.log("### Failed to update Dubs")
 
 
 def getChangeLog():

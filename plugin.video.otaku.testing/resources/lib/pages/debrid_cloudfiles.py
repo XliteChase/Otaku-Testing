@@ -40,7 +40,6 @@ class Sources(BrowserBase):
         filenames_query = ','.join(filenames)
         response = client.request('https://armkai.vercel.app/api/fuzzypacks', params={"dict": filenames_query, "match": query})
         resp = json.loads(response) if response else []
-
         for i in resp:
             torrent = torrents[i]
             filename = re.sub(r'\[.*?]', '', torrent['filename']).lower()
