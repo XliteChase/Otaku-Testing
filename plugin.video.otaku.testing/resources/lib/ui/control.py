@@ -279,12 +279,13 @@ def set_videotags(li, info):
         vinfo.setTrailer(trailer)
 
     if uniqueids := info.get('UniqueIDs'):
+        uniqueids = {key: str(value) for key, value in uniqueids.items()}
         vinfo.setUniqueIDs(uniqueids)
         if 'imdb' in uniqueids:
             vinfo.setIMDBNumber(uniqueids['imdb'])
         for key, value in uniqueids.items():
             if value is not None:
-                li.setProperty(key, str(value))       
+                li.setProperty(key, str(value))
 
     if resume := info.get('resume'):
         vinfo.setResumePoint(float(resume), 1)
