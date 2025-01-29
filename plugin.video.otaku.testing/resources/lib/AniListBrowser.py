@@ -1947,7 +1947,12 @@ class AniListBrowser(BrowserBase):
             desc = desc.replace('\n', '')
 
         info = {
-            'UniqueIDs': {'anilist_id': str(anilist_id), 'mal_id': str(mal_id)},
+            'UniqueIDs': {
+                'anilist_id': str(anilist_id),
+                'mal_id': str(mal_id),
+                **database.get_mapping_ids(anilist_id, 'anilist_id'),
+                **database.get_mapping_ids(mal_id, 'mal_id')
+            },
             'genre': res.get('genres'),
             'title': title,
             'plot': desc,

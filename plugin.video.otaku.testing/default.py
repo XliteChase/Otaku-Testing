@@ -44,7 +44,10 @@ def add_last_watched(items):
         kodi_meta = pickle.loads(database.get_show(mal_id)['kodi_meta'])
         last_watched = "%s[I]%s[/I]" % (control.lang(30000), kodi_meta['title_userPreferred'])
         info = {
-            'UniqueIDs': {'mal_id': mal_id},
+            'UniqueIDs': {
+                'mal_id': mal_id,
+                **database.get_mapping_ids(mal_id, 'mal_id')
+            },
             'title': kodi_meta['title_userPreferred'],
             'plot': kodi_meta['plot'],
             # 'mpaa': kodi_meta[''],
