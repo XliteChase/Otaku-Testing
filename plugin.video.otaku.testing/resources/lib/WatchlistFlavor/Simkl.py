@@ -5,7 +5,7 @@ import json
 from resources.lib.ui import utils, database, client, control, get_meta
 from resources.lib.WatchlistFlavor.WatchlistFlavorBase import WatchlistFlavorBase
 from resources.lib.ui.divide_flavors import div_flavor
-from resources.lib.endpoints import simkl_calendar, anilist
+from resources.lib.endpoints import simkl, anilist
 
 
 class SimklWLF(WatchlistFlavorBase):
@@ -15,9 +15,8 @@ class SimklWLF(WatchlistFlavorBase):
     _NAME = 'simkl'
     _IMAGE = "simkl.png"
 
-    # client_id = '5178a709b7942f1f5077b737b752eea0f6dee684d0e044fa5acee8822a0cbe9b'    # Swag
-    # client_id = "503b6b37476926a7a17ac86b95a81b245879955a7531e3e7d8913c0624796ea0"    # JZ
-    client_id = "59dfdc579d244e1edf6f89874d521d37a69a95a1abd349910cb056a1872ba2c8"      # Otaku
+    api_info = database.get_info('Simkl')
+    client_id = api_info['client_id']
 
     def __headers(self):
         headers = {
@@ -198,12 +197,12 @@ class SimklWLF(WatchlistFlavorBase):
         episode_count = res["total_episodes_count"]
 
         if not control.getBool('playlist.unaired'):
-            airing_episode = simkl_calendar.SimklCalendar().get_calendar_data(mal_id)
+            airing_episode = simkl.Simkl().get_calendar_data(mal_id)
             if not airing_episode:
                 airing_episode = anilist.Anilist().get_airing_calendar(mal_id)
 
             if airing_episode:
-                episode_count = airing_episode - 1
+                episode_count = airing_episode
 
         if 0 < episode_count < next_up:
             return

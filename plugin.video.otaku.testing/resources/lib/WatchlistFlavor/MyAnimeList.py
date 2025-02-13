@@ -7,7 +7,7 @@ import json
 from resources.lib.ui import utils, client, control, get_meta, database
 from resources.lib.WatchlistFlavor.WatchlistFlavorBase import WatchlistFlavorBase
 from resources.lib.ui.divide_flavors import div_flavor
-from resources.lib.endpoints import simkl_calendar, anilist
+from resources.lib.endpoints import simkl, anilist
 
 
 class MyAnimeListWLF(WatchlistFlavorBase):
@@ -31,8 +31,11 @@ class MyAnimeListWLF(WatchlistFlavorBase):
         code_verifier = params.get('state')
 
         oauth_url = 'https://myanimelist.net/v1/oauth2/token'
+        api_info = database.get_info('MyAnimeList')
+        client_id = api_info['client_id']
+
         data = {
-            'client_id': 'a8d85a4106b259b8c9470011ce2f76bc',
+            'client_id': client_id,
             'code': code,
             'code_verifier': code_verifier,
             'grant_type': 'authorization_code'
@@ -57,8 +60,11 @@ class MyAnimeListWLF(WatchlistFlavorBase):
     @staticmethod
     def refresh_token():
         oauth_url = 'https://myanimelist.net/v1/oauth2/token'
+        api_info = database.get_info('MyAnimeList')
+        client_id = api_info['client_id']
+
         data = {
-            'client_id': 'a8d85a4106b259b8c9470011ce2f76bc',
+            'client_id': client_id,
             'grant_type': 'refresh_token',
             'refresh_token': control.getSetting('mal.refresh')
         }
@@ -220,12 +226,12 @@ class MyAnimeListWLF(WatchlistFlavorBase):
         eps_total = res['node']["num_episodes"]
 
         if not control.getBool('playlist.unaired'):
-            airing_episode = simkl_calendar.SimklCalendar().get_calendar_data(mal_id)
+            airing_episode = simkl.Simkl().get_calendar_data(mal_id)
             if not airing_episode:
                 airing_episode = anilist.Anilist().get_airing_calendar(mal_id)
 
             if airing_episode:
-                eps_total = airing_episode - 1
+                eps_total = airing_episode
 
         if 0 < eps_total < next_up:
             return

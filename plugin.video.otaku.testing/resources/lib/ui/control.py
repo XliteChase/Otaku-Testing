@@ -30,6 +30,11 @@ pathExists = xbmcvfs.exists
 dataPath = xbmcvfs.translatePath(addonInfo('profile'))
 kodi_version = xbmcaddon.Addon('xbmc.addon').getAddonInfo('version')
 
+context_addon_id = 'context.otaku.testing'
+context_addon = xbmcaddon.Addon(context_addon_id)
+context_addon_path = context_addon.getAddonInfo('path')
+infoDB = os.path.join(context_addon_path, 'info.db')
+
 cacheFile = os.path.join(dataPath, 'cache.db')
 searchHistoryDB = os.path.join(dataPath, 'search.db')
 malSyncDB = os.path.join(dataPath, 'malSync.db')
@@ -285,6 +290,8 @@ def set_videotags(li, info):
         vinfo.setStudios(studio)
     if cast := info.get('cast'):
         vinfo.setCast([xbmc.Actor(c['name'], c['role'], c['index'], c['thumbnail']) for c in cast])
+    if country := info.get('country'):
+        vinfo.setCountries(country)
     if originaltitle := info.get('OriginalTitle'):
         vinfo.setOriginalTitle(originaltitle)
     if trailer := info.get('trailer'):
