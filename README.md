@@ -50,7 +50,6 @@ Having issues? Check out these resources:
 
 - 🔹 **Accounts:** Add **EasyNews** Debrid Provider
 - 🔹 **Accounts:** Add **OffCloud** Debrid Provider
-- 🔹 **Menus:** Add TV & Movie Menus
 
 ---
 
