@@ -68,7 +68,7 @@ class SourceSelect(BaseWindow):
             self.getControl(15).setLabel("View Cached")
             self.showing_uncached = True
         self.setFocusId(1000)
-    
+
     def populate_sources(self, sources):
         self.display_list.reset()
         self.displayed_sources = sources  # Update the displayed sources list
