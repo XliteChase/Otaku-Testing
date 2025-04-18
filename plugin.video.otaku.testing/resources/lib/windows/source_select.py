@@ -28,6 +28,7 @@ class SourceSelect(BaseWindow):
             try:
                 self.setProperty('item.info.season', str(anime_init[0][episode - 1]['info']['season']))
                 self.setProperty('item.info.episode', str(anime_init[0][episode - 1]['info']['episode']))
+                self.setProperty('item.info.title', anime_init[0][episode - 1]['info']['title'])
                 self.setProperty('item.info.plot', anime_init[0][episode - 1]['info']['plot'])
                 self.setProperty('item.info.aired', anime_init[0][episode - 1]['info'].get('aired'))
                 self.setProperty('item.art.thumb', anime_init[0][episode - 1]['image']['thumb'])
