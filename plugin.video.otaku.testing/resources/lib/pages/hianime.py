@@ -240,11 +240,12 @@ class Sources(BrowserBase):
 
         secret = database.get(self.mega_secret, 1)
         if secret:
-            jd = decrypt_aes_cbc_openssl(sources, secret)
-            return jd[0].get('file')
-
-        control.log('decryption key not working')
-        database.remove(self.mega_secret)
+            try:
+                jd = decrypt_aes_cbc_openssl(sources, secret)
+                return jd[0].get('file')
+            except UnicodeDecodeError:
+                control.log('decryption key not working')
+                database.remove(self.mega_secret)
         return ''
 
     def mega_secret(self):
@@ -260,6 +261,8 @@ class Sources(BrowserBase):
             decrypted_string = ""
             for i, char in enumerate(xor_data):
                 decrypted_string += chr(ord(char) ^ ord(xor_key[i % len(xor_key)]))
-            k = re.search(r"([a-f0-9]{52}).*?&([a-f0-9]{6})&.*?&([a-f0-9]{6})&", decrypted_string)
+            p1 = r"@([a-f0-9]{6})@.*?([a-f0-9]{52}).*?@([a-f0-9]{6})@"
+            p2 = r"([a-f0-9]{64})"
+            k = re.search(p1, decrypted_string) or re.search(p2, decrypted_string)
             if k:
-                return k.group(3) + k.group(2) + k.group(1)
+                return k.group(1)[::-1] if len(k.groups()) == 1 else k.group(3) + k.group(1) + k.group(2)
