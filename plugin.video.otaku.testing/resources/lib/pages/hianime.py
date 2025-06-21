@@ -249,20 +249,12 @@ class Sources(BrowserBase):
         return ''
 
     def mega_secret(self):
-        # (c) 2025 Ciarands
-        import time
-        timestamp = int(time.time())
-        key_url = self._KEY_URL.format(timestamp)
-        data = self._get_request(key_url)
-        x = re.search(r"return \"([^\"]+)\"", data)
-        if x:
-            xor_data = urllib.parse.unquote(x.group(1))
-            xor_key = re.findall(r"\('([^']+)'\)", data)[0]
-            decrypted_string = ""
-            for i, char in enumerate(xor_data):
-                decrypted_string += chr(ord(char) ^ ord(xor_key[i % len(xor_key)]))
-            p1 = r"@([a-f0-9]{6})@.*?([a-f0-9]{52}).*?@([a-f0-9]{6})@"
-            p2 = r"([a-f0-9]{64})"
-            k = re.search(p1, decrypted_string) or re.search(p2, decrypted_string)
-            if k:
-                return k.group(1)[::-1] if len(k.groups()) == 1 else k.group(3) + k.group(1) + k.group(2)
+        api_url = 'https://api.github.com/repos/'
+        repo_path = 'yogesh-hacker/MegacloudKeys/'
+        data_url = 'https://raw.githubusercontent.com/'
+        commits = 'commits?path='
+        file_path = '/keys.json'
+        r = json.loads(self._get_request(api_url + repo_path + commits + file_path[1:] + '&per_page=5'))
+        cid = r[0].get('sha')
+        res = json.loads(self._get_request(data_url + repo_path + cid + file_path))
+        return res.get('mega')
