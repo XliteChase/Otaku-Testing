@@ -1513,6 +1513,11 @@ class AniListBrowser(BrowserBase):
 
         json_res = results.get('data', {}).get('Page')
 
+        genre_filter = variables.get('includedGenres') or variables.get('genre_in')
+        if json_res and genre_filter and isinstance(genre_filter, (list, tuple)) and len(genre_filter) > 1:
+            genre_set = set(genre_filter)
+            json_res['ANIME'] = [a for a in json_res['ANIME'] if genre_set.issubset(set(a.get('genres', [])))]
+
         if control.getBool('general.malposters'):
             try:
                 for anime in json_res['ANIME']:
@@ -2516,6 +2521,11 @@ class AniListBrowser(BrowserBase):
         results = json.loads(r)
         anime_res = results['data']['Page']['ANIME']
         hasNextPage = results['data']['Page']['pageInfo']['hasNextPage']
+
+        genre_filter = variables.get('genre_in')
+        if genre_filter and isinstance(genre_filter, (list, tuple)) and len(genre_filter) > 1:
+            genre_set = set(genre_filter)
+            anime_res = [a for a in anime_res if genre_set.issubset(set(a.get('genres', [])))]
 
         if control.getBool('general.malposters'):
             try:
