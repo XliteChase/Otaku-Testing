@@ -2401,8 +2401,7 @@ class AniListBrowser(BrowserBase):
             $season: MediaSeason,
             $status: MediaStatus,
             $genre_in: [String],
-            $tag_in: [String],
-            $sort: [MediaSort] = [POPULARITY_DESC]
+            $tag_in: [String]
         ) {
             Page (page: $page, perPage: $perpage) {
                 pageInfo {
@@ -2416,8 +2415,7 @@ class AniListBrowser(BrowserBase):
                     season: $season,
                     status: $status,
                     isAdult: $isAdult,
-                    countryOfOrigin: $countryOfOrigin,
-                    sort: $sort
+                    countryOfOrigin: $countryOfOrigin
                 ) {
                     id
                     idMal
@@ -2498,8 +2496,7 @@ class AniListBrowser(BrowserBase):
             'type': "ANIME",
             'genre_in': genre_list if genre_list else None,
             'tag_in': tag_list if tag_list else None,
-            'isAdult': 'Hentai' in genre_list,
-            'sort': "POPULARITY_DESC"
+            'isAdult': 'Hentai' in genre_list
         }
 
         if format:
@@ -2517,16 +2514,12 @@ class AniListBrowser(BrowserBase):
         if format:
             variables['format'] = format
 
-        try:
-            from resources.lib import Main
-            prefix = Main.plugin_url.split('/', 1)[0]
-            base_plugin_url = f"{prefix}/{genre_list}/{tag_list}?page=%d"
-        except Exception:
-            base_plugin_url = f"genres/{genre_list}/{tag_list}?page=%d"
-
-        return self.process_genre_view(query, variables, base_plugin_url, page)
+        return self.process_genre_view(query, variables, f"genres/{genre_list}/{tag_list}?page=%d", page)
 
     def process_genre_view(self, query, variables, base_plugin_url, page):
+        control.log(f"AniList query: {query.strip()[:80]}...")
+        control.log(f"AniList variables: {json.dumps(variables)}")
+        control.log(f"Base plugin URL: {base_plugin_url}")
         r = client.request(self._BASE_URL, post={'query': query, 'variables': variables}, jpost=True)
         results = json.loads(r)
         anime_res = results['data']['Page']['ANIME']
