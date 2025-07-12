@@ -1513,6 +1513,11 @@ class AniListBrowser(BrowserBase):
 
         json_res = results.get('data', {}).get('Page')
 
+        genre_filter = variables.get('includedGenres') or variables.get('genre_in')
+        if json_res and genre_filter and isinstance(genre_filter, (list, tuple)) and len(genre_filter) > 1:
+            genre_set = set(genre_filter)
+            json_res['ANIME'] = [a for a in json_res['ANIME'] if genre_set.issubset(set(a.get('genres', [])))]
+
         if control.getBool('general.malposters'):
             try:
                 for anime in json_res['ANIME']:
@@ -2396,7 +2401,7 @@ class AniListBrowser(BrowserBase):
             $season: MediaSeason,
             $status: MediaStatus,
             $genre_in: [String],
-            $tag_in: [String],
+            $tag_in: [String]
         ) {
             Page (page: $page, perPage: $perpage) {
                 pageInfo {
@@ -2512,10 +2517,18 @@ class AniListBrowser(BrowserBase):
         return self.process_genre_view(query, variables, f"genres/{genre_list}/{tag_list}?page=%d", page)
 
     def process_genre_view(self, query, variables, base_plugin_url, page):
+        control.log(f"AniList query: {query.strip()[:80]}...")
+        control.log(f"AniList variables: {json.dumps(variables)}")
+        control.log(f"Base plugin URL: {base_plugin_url}")
         r = client.request(self._BASE_URL, post={'query': query, 'variables': variables}, jpost=True)
         results = json.loads(r)
         anime_res = results['data']['Page']['ANIME']
         hasNextPage = results['data']['Page']['pageInfo']['hasNextPage']
+
+        genre_filter = variables.get('genre_in')
+        if genre_filter and isinstance(genre_filter, (list, tuple)) and len(genre_filter) > 1:
+            genre_set = set(genre_filter)
+            anime_res = [a for a in anime_res if genre_set.issubset(set(a.get('genres', [])))]
 
         if control.getBool('general.malposters'):
             try:

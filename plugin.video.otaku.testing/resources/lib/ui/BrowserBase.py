@@ -13,6 +13,7 @@ class BrowserBase(object):
     def handle_paging(hasnextpage, base_url, page):
         if not hasnextpage or not control.is_addon_visible() and control.getBool('widget.hide.nextpage'):
             return []
+
         next_page = page + 1
         name = "Next Page (%d)" % next_page
         return [utils.allocate_item(name, base_url % next_page, True, False, [], 'next.png', {'plot': name}, 'next.png')]
