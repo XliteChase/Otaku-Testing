@@ -1513,6 +1513,11 @@ class AniListBrowser(BrowserBase):
 
         json_res = results.get('data', {}).get('Page')
 
+        genre_filter = variables.get('includedGenres') or variables.get('genre_in')
+        if json_res and genre_filter and isinstance(genre_filter, (list, tuple)) and len(genre_filter) > 1:
+            genre_set = set(genre_filter)
+            json_res['ANIME'] = [a for a in json_res['ANIME'] if genre_set.issubset(set(a.get('genres', [])))]
+
         if control.getBool('general.malposters'):
             try:
                 for anime in json_res['ANIME']:
@@ -2397,6 +2402,7 @@ class AniListBrowser(BrowserBase):
             $status: MediaStatus,
             $genre_in: [String],
             $tag_in: [String],
+            $sort: [MediaSort] = [POPULARITY_DESC]
         ) {
             Page (page: $page, perPage: $perpage) {
                 pageInfo {
@@ -2410,7 +2416,8 @@ class AniListBrowser(BrowserBase):
                     season: $season,
                     status: $status,
                     isAdult: $isAdult,
-                    countryOfOrigin: $countryOfOrigin
+                    countryOfOrigin: $countryOfOrigin,
+                    sort: $sort
                 ) {
                     id
                     idMal
@@ -2491,7 +2498,8 @@ class AniListBrowser(BrowserBase):
             'type': "ANIME",
             'genre_in': genre_list if genre_list else None,
             'tag_in': tag_list if tag_list else None,
-            'isAdult': 'Hentai' in genre_list
+            'isAdult': 'Hentai' in genre_list,
+            'sort': "POPULARITY_DESC"
         }
 
         if format:
@@ -2509,13 +2517,25 @@ class AniListBrowser(BrowserBase):
         if format:
             variables['format'] = format
 
-        return self.process_genre_view(query, variables, f"genres/{genre_list}/{tag_list}?page=%d", page)
+        try:
+            from resources.lib import Main
+            prefix = Main.plugin_url.split('/', 1)[0]
+            base_plugin_url = f"{prefix}/{genre_list}/{tag_list}?page=%d"
+        except Exception:
+            base_plugin_url = f"genres/{genre_list}/{tag_list}?page=%d"
+
+        return self.process_genre_view(query, variables, base_plugin_url, page)
 
     def process_genre_view(self, query, variables, base_plugin_url, page):
         r = client.request(self._BASE_URL, post={'query': query, 'variables': variables}, jpost=True)
         results = json.loads(r)
         anime_res = results['data']['Page']['ANIME']
         hasNextPage = results['data']['Page']['pageInfo']['hasNextPage']
+
+        genre_filter = variables.get('genre_in')
+        if genre_filter and isinstance(genre_filter, (list, tuple)) and len(genre_filter) > 1:
+            genre_set = set(genre_filter)
+            anime_res = [a for a in anime_res if genre_set.issubset(set(a.get('genres', [])))]
 
         if control.getBool('general.malposters'):
             try:
