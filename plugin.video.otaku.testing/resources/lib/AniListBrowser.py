@@ -2402,6 +2402,7 @@ class AniListBrowser(BrowserBase):
             $status: MediaStatus,
             $genre_in: [String],
             $tag_in: [String],
+            $sort: [MediaSort] = [POPULARITY_DESC]
         ) {
             Page (page: $page, perPage: $perpage) {
                 pageInfo {
@@ -2415,7 +2416,8 @@ class AniListBrowser(BrowserBase):
                     season: $season,
                     status: $status,
                     isAdult: $isAdult,
-                    countryOfOrigin: $countryOfOrigin
+                    countryOfOrigin: $countryOfOrigin,
+                    sort: $sort
                 ) {
                     id
                     idMal
@@ -2496,7 +2498,8 @@ class AniListBrowser(BrowserBase):
             'type': "ANIME",
             'genre_in': genre_list if genre_list else None,
             'tag_in': tag_list if tag_list else None,
-            'isAdult': 'Hentai' in genre_list
+            'isAdult': 'Hentai' in genre_list,
+            'sort': "POPULARITY_DESC"
         }
 
         if format:
@@ -2514,7 +2517,14 @@ class AniListBrowser(BrowserBase):
         if format:
             variables['format'] = format
 
-        return self.process_genre_view(query, variables, f"genres/{genre_list}/{tag_list}?page=%d", page)
+        try:
+            from resources.lib import Main
+            prefix = Main.plugin_url.split('/', 1)[0]
+            base_plugin_url = f"{prefix}/{genre_list}/{tag_list}?page=%d"
+        except Exception:
+            base_plugin_url = f"genres/{genre_list}/{tag_list}?page=%d"
+
+        return self.process_genre_view(query, variables, base_plugin_url, page)
 
     def process_genre_view(self, query, variables, base_plugin_url, page):
         r = client.request(self._BASE_URL, post={'query': query, 'variables': variables}, jpost=True)
