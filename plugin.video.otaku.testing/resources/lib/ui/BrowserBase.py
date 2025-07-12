@@ -2,6 +2,7 @@
 import base64
 import re
 import urllib.parse
+import sys
 
 from resources.lib.ui import client, control, utils
 
@@ -11,11 +12,45 @@ class BrowserBase(object):
 
     @staticmethod
     def handle_paging(hasnextpage, base_url, page):
+        """Return a menu item for the next page.
+
+        ``base_url`` may include query parameters or even a different
+        route when multiple filters are active. ``sys.argv`` provides the
+        current plugin route along with any query string issued for the
+        present page. To preserve filters we merge parameters from both
+        sources and decide which route contains the actual filter path.
+        """
+
         if not hasnextpage or not control.is_addon_visible() and control.getBool('widget.hide.nextpage'):
             return []
+
         next_page = page + 1
         name = "Next Page (%d)" % next_page
-        return [utils.allocate_item(name, base_url % next_page, True, False, [], 'next.png', {'plot': name}, 'next.png')]
+
+        # Current route and query parameters
+        current_route = control.get_plugin_url(sys.argv[0])
+        current_params = dict(urllib.parse.parse_qsl(sys.argv[2].lstrip('?')))
+
+        # Parameters and route from the provided base URL
+        formatted_base = base_url % next_page
+        if '?' in formatted_base:
+            base_route, base_qs = formatted_base.split('?', 1)
+            base_params = dict(urllib.parse.parse_qsl(base_qs))
+        else:
+            base_route, base_params = formatted_base, {}
+
+        # Choose the most specific route between base and current
+        if current_route.startswith(base_route):
+            route = current_route
+        else:
+            route = base_route
+
+        # Merge parameters giving precedence to existing ones
+        params = {**base_params, **current_params}
+        params['page'] = next_page
+        url = f"{route}?{urllib.parse.urlencode(params)}"
+
+        return [utils.allocate_item(name, url, True, False, [], 'next.png', {'plot': name}, 'next.png')]
 
     @staticmethod
     def open_completed():
