@@ -9,13 +9,23 @@ from resources.lib.ui import client, control, utils
 class BrowserBase(object):
     _BASE_URL = None
 
-    @staticmethod
-    def handle_paging(hasnextpage, base_url, page):
+    def set_current_path(self, path):
+        self._current_path = path
+
+    def handle_paging(self, hasnextpage, base_url, page):
         if not hasnextpage or not control.is_addon_visible() and control.getBool('widget.hide.nextpage'):
             return []
         next_page = page + 1
         name = "Next Page (%d)" % next_page
-        return [utils.allocate_item(name, base_url % next_page, True, False, [], 'next.png', {'plot': name}, 'next.png')]
+        url = base_url % next_page
+        plugin_path = getattr(self, '_current_path', None)
+        if plugin_path:
+            if '?' in url:
+                _, query = url.split('?', 1)
+                url = f'{plugin_path}?{query}'
+            else:
+                url = plugin_path
+        return [utils.allocate_item(name, url, True, False, [], 'next.png', {'plot': name}, 'next.png')]
 
     @staticmethod
     def open_completed():

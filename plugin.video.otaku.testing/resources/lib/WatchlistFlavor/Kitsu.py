@@ -67,8 +67,7 @@ class KitsuWLF(WatchlistFlavorBase):
         control.setSetting('kitsu.refresh', data['refresh_token'])
         control.setInt('kitsu.expiry', int(time.time() + int(data['expires_in'])))
 
-    @staticmethod
-    def handle_paging(hasnextpage, base_url, page):
+    def handle_paging(self, hasnextpage, base_url, page):
         if not hasnextpage or not control.is_addon_visible() and control.getBool('widget.hide.nextpage'):
             return []
         next_page = page + 1

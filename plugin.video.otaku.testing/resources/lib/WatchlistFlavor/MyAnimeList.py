@@ -76,8 +76,7 @@ class MyAnimeListWLF(WatchlistFlavorBase):
         control.setSetting('mal.refresh', res['refresh_token'])
         control.setInt('mal.expiry', int(time.time()) + int(res['expires_in']))
 
-    @staticmethod
-    def handle_paging(hasnextpage, base_url, page):
+    def handle_paging(self, hasnextpage, base_url, page):
         if not hasnextpage or not control.is_addon_visible() and control.getBool('widget.hide.nextpage'):
             return []
         next_page = page + 1

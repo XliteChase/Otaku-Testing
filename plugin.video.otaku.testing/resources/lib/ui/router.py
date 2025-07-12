@@ -18,6 +18,8 @@ class Route:
 def router_process(url, params=None):
     if not params:
         params = {}
+    from resources.lib import OtakuBrowser
+    OtakuBrowser.BROWSER.set_current_path(url)
     payload = "/".join(url.split("/")[1:])
     for route_obj in ROUTES:
         if url == route_obj.path or (route_obj.wildcard and url.startswith(route_obj.path)):
