@@ -2,6 +2,7 @@
 import base64
 import re
 import urllib.parse
+import sys
 
 from resources.lib.ui import client, control, utils
 
@@ -15,7 +16,9 @@ class BrowserBase(object):
             return []
         next_page = page + 1
         name = "Next Page (%d)" % next_page
-        return [utils.allocate_item(name, base_url % next_page, True, False, [], 'next.png', {'plot': name}, 'next.png')]
+        current_route = control.get_plugin_url(sys.argv[0])
+        url = f"{current_route}?page={next_page}"
+        return [utils.allocate_item(name, url, True, False, [], 'next.png', {'plot': name}, 'next.png')]
 
     @staticmethod
     def open_completed():

@@ -841,7 +841,7 @@ class AniListBrowser(BrowserBase):
         favourites = database.get(self.get_base_res, 24, variables)
         return self.process_anilist_view(favourites, "all_time_favourites?page=%d", page)
 
-    def get_top_100(self, page, format):
+    def get_top_100(self, page, format, plugin_url="top_100"):
         variables = {
             'page': page,
             'perpage': self.perpage,
@@ -868,7 +868,8 @@ class AniListBrowser(BrowserBase):
             variables['includedTags'] = self.tag
 
         top_100 = database.get(self.get_base_res, 24, variables)
-        return self.process_anilist_view(top_100, "top_100?page=%d", page)
+        base_url = f"{plugin_url}?page=%d"
+        return self.process_anilist_view(top_100, base_url, page)
 
     def get_genre_action(self, page, format):
         variables = {
