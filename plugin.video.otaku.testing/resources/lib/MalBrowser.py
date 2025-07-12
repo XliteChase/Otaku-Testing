@@ -971,7 +971,7 @@ class MalBrowser(BrowserBase):
         favourites = database.get(self.get_base_res, 24, f"{self._BASE_URL}/anime", params)
         return self.process_mal_view(favourites, "all_time_favourites?page=%d", page)
 
-    def get_top_100(self, page, format):
+    def get_top_100(self, page, format, plugin_url="top_100"):
         params = {
             'page': page,
             'limit': self.perpage,
@@ -994,7 +994,8 @@ class MalBrowser(BrowserBase):
             params['genres'] = self.genre
 
         top_100 = database.get(self.get_base_res, 24, f"{self._BASE_URL}/top/anime", params)
-        return self.process_mal_view(top_100, "top_100?page=%d", page)
+        base_url = f"{plugin_url}?page=%d"
+        return self.process_mal_view(top_100, base_url, page)
 
     def get_genre_action(self, page, format):
         params = {

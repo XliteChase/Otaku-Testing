@@ -694,7 +694,7 @@ def TOP_100(payload, params):
     format = None
     if plugin_url in mapping:
         format = mapping[plugin_url][0] if control.settingids.browser_api == 'mal' else mapping[plugin_url][1]
-    control.draw_items(BROWSER.get_top_100(page, format), 'tvshows')
+    control.draw_items(BROWSER.get_top_100(page, format, plugin_url), 'tvshows')
 
 
 @Route('genres/*')
