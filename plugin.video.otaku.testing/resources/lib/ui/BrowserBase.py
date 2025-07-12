@@ -2,6 +2,7 @@
 import base64
 import re
 import urllib.parse
+import sys
 
 from resources.lib.ui import client, control, utils
 
@@ -11,11 +12,25 @@ class BrowserBase(object):
 
     @staticmethod
     def handle_paging(hasnextpage, base_url, page):
+        """Return a menu item for the next page.
+
+        ``base_url`` is preserved for backward compatibility but ignored in
+        favour of building the URL from the current plugin route to keep any
+        active filters intact.
+        """
+
         if not hasnextpage or not control.is_addon_visible() and control.getBool('widget.hide.nextpage'):
             return []
+
         next_page = page + 1
         name = "Next Page (%d)" % next_page
-        return [utils.allocate_item(name, base_url % next_page, True, False, [], 'next.png', {'plot': name}, 'next.png')]
+
+        current_route = control.get_plugin_url(sys.argv[0])
+        current_params = dict(urllib.parse.parse_qsl(sys.argv[2].lstrip('?')))
+        current_params['page'] = next_page
+        url = f"{current_route}?{urllib.parse.urlencode(current_params)}"
+
+        return [utils.allocate_item(name, url, True, False, [], 'next.png', {'plot': name}, 'next.png')]
 
     @staticmethod
     def open_completed():
