@@ -250,7 +250,13 @@ class AniListBrowser(BrowserBase):
             variables['includedTags'] = self.tag
 
         trending = database.get(self.get_base_res, 24, variables)
-        return self.process_anilist_view(trending, "trending_last_year?page=%d", page)
+        try:
+            from resources.lib import Main
+            prefix = Main.plugin_url.split('?', 1)[0]
+            base_plugin_url = f"{prefix}?page=%d"
+        except Exception:
+            base_plugin_url = "trending_last_year?page=%d"
+        return self.process_anilist_view(trending, base_plugin_url, page)
 
     def get_trending_this_year(self, page, format):
         season, year = self.get_season_year('')
@@ -281,7 +287,13 @@ class AniListBrowser(BrowserBase):
             variables['includedTags'] = self.tag
 
         trending = database.get(self.get_base_res, 24, variables)
-        return self.process_anilist_view(trending, "trending_this_year?page=%d", page)
+        try:
+            from resources.lib import Main
+            prefix = Main.plugin_url.split('?', 1)[0]
+            base_plugin_url = f"{prefix}?page=%d"
+        except Exception:
+            base_plugin_url = "trending_this_year?page=%d"
+        return self.process_anilist_view(trending, base_plugin_url, page)
 
     def get_trending_last_season(self, page, format):
         season, year = self.get_season_year('last')
@@ -313,7 +325,13 @@ class AniListBrowser(BrowserBase):
             variables['includedTags'] = self.tag
 
         trending = database.get(self.get_base_res, 24, variables)
-        return self.process_anilist_view(trending, "trending_last_season?page=%d", page)
+        try:
+            from resources.lib import Main
+            prefix = Main.plugin_url.split('?', 1)[0]
+            base_plugin_url = f"{prefix}?page=%d"
+        except Exception:
+            base_plugin_url = "trending_last_season?page=%d"
+        return self.process_anilist_view(trending, base_plugin_url, page)
 
     def get_trending_this_season(self, page, format):
         season, year = self.get_season_year('this')
@@ -345,7 +363,13 @@ class AniListBrowser(BrowserBase):
             variables['includedTags'] = self.tag
 
         trending = database.get(self.get_base_res, 24, variables)
-        return self.process_anilist_view(trending, "trending_this_season?page=%d", page)
+        try:
+            from resources.lib import Main
+            prefix = Main.plugin_url.split('?', 1)[0]
+            base_plugin_url = f"{prefix}?page=%d"
+        except Exception:
+            base_plugin_url = "trending_this_season?page=%d"
+        return self.process_anilist_view(trending, base_plugin_url, page)
 
     def get_all_time_trending(self, page, format):
         variables = {
@@ -374,7 +398,13 @@ class AniListBrowser(BrowserBase):
             variables['includedTags'] = self.tag
 
         trending = database.get(self.get_base_res, 24, variables)
-        return self.process_anilist_view(trending, "all_time_trending?page=%d", page)
+        try:
+            from resources.lib import Main
+            prefix = Main.plugin_url.split('?', 1)[0]
+            base_plugin_url = f"{prefix}?page=%d"
+        except Exception:
+            base_plugin_url = "all_time_trending?page=%d"
+        return self.process_anilist_view(trending, base_plugin_url, page)
 
     def get_popular_last_year(self, page, format):
         season, year = self.get_season_year('')
@@ -1348,7 +1378,13 @@ class AniListBrowser(BrowserBase):
             for i in search_adult["ANIME"]:
                 i['title']['english'] = f'{i["title"]["english"]} - {control.colorstr("Adult", "red")}'
             search['ANIME'] += search_adult['ANIME']
-        return self.process_anilist_view(search, f"search_anime/{query}?page=%d", page)
+        try:
+            from resources.lib import Main
+            prefix = Main.plugin_url.split('/', 1)[0]
+            base_plugin_url = f"{prefix}/{query}?page=%d"
+        except Exception:
+            base_plugin_url = f"search_anime/{query}?page=%d"
+        return self.process_anilist_view(search, base_plugin_url, page)
 
     def get_recommendations(self, mal_id, page):
         variables = {
