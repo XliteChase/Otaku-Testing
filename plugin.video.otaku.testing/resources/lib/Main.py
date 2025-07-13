@@ -718,8 +718,9 @@ def GENRES(payload, params):
     genres, tags = payload.rsplit("/")
     page = int(params.get('page', 1))
     format = None
-    if plugin_url in mapping:
-        format = mapping[plugin_url][0] if control.settingids.browser_api == 'mal' else mapping[plugin_url][1]
+    base_key = plugin_url.split('/', 1)[0] + '//'
+    if base_key in mapping:
+        format = mapping[base_key][0] if control.settingids.browser_api == 'mal' else mapping[base_key][1]
     if genres or tags:
         control.draw_items(BROWSER.genres_payload(genres, tags, page, format), 'tvshows')
     else:
