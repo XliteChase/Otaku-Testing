@@ -80,6 +80,17 @@ class WatchlistFlavor:
             return control.ok_dialog('Login', 'Incorrect username or password')
         for _id, value in list(res.items()):
             control.setSetting('%s.%s' % (flavor, _id), str(value))
+        try:
+            mapping = {
+                'anilist': 'AniList',
+                'kitsu': 'Kitsu',
+                'mal': 'MAL',
+                'simkl': 'Simkl'
+            }
+            control.setBool('watchlist.update.enabled', True)
+            control.setSetting('watchlist.update.flavor', mapping.get(flavor, flavor.capitalize()))
+        except Exception:
+            control.log('Failed to set watchlist update settings', 'warning')
         control.refresh()
         return control.ok_dialog('Login', 'Success')
 
