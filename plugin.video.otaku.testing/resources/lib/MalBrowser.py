@@ -335,7 +335,13 @@ class MalBrowser(BrowserBase):
             params['type'] = self.format_in_type
 
         search = database.get(self.get_base_res, 24, f"{self._BASE_URL}/anime", params)
-        return self.process_mal_view(search, f"search_anime/{query}?page=%d", page)
+        try:
+            from resources.lib import Main
+            prefix = Main.plugin_url.split('/', 1)[0]
+            base_plugin_url = f"{prefix}/{query}?page=%d"
+        except Exception:
+            base_plugin_url = f"search_anime/{query}?page=%d"
+        return self.process_mal_view(search, base_plugin_url, page)
 
     def get_airing_last_season(self, page, format):
         season, year, _, _, _, _, _, _, _, _, _, _, _, _ = self.get_season_year('last')
