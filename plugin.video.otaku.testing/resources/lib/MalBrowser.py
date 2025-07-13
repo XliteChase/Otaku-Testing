@@ -422,7 +422,12 @@ class MalBrowser(BrowserBase):
             params['genres'] = self.genre
 
         trending = database.get(self.get_base_res, 24, f"{self._BASE_URL}/anime", params)
-        return self.process_mal_view(trending, "trending_last_year?page=%d", page)
+        try:
+            from resources.lib import Main
+            base_plugin_url = f"{Main.plugin_url}?page=%d"
+        except Exception:
+            base_plugin_url = "trending_last_year?page=%d"
+        return self.process_mal_view(trending, base_plugin_url, page)
 
     def get_trending_this_year(self, page, format):
         _, _, year_start_date, _, _, _, _, _, _, _, _, _, _, _ = self.get_season_year('')
@@ -451,7 +456,12 @@ class MalBrowser(BrowserBase):
             params['genres'] = self.genre
 
         trending = database.get(self.get_base_res, 24, f"{self._BASE_URL}/anime", params)
-        return self.process_mal_view(trending, "trending_this_year?page=%d", page)
+        try:
+            from resources.lib import Main
+            base_plugin_url = f"{Main.plugin_url}?page=%d"
+        except Exception:
+            base_plugin_url = "trending_this_year?page=%d"
+        return self.process_mal_view(trending, base_plugin_url, page)
 
     def get_trending_last_season(self, page, format):
         _, _, _, _, _, _, season_start_date_last, season_end_date_last, _, _, _, _, _, _ = self.get_season_year('')
@@ -481,7 +491,12 @@ class MalBrowser(BrowserBase):
             params['genres'] = self.genre
 
         trending = database.get(self.get_base_res, 24, f"{self._BASE_URL}/anime", params)
-        return self.process_mal_view(trending, "trending_last_season?page=%d", page)
+        try:
+            from resources.lib import Main
+            base_plugin_url = f"{Main.plugin_url}?page=%d"
+        except Exception:
+            base_plugin_url = "trending_last_season?page=%d"
+        return self.process_mal_view(trending, base_plugin_url, page)
 
     def get_trending_this_season(self, page, format):
         _, _, _, _, season_start_date, _, _, _, _, _, _, _, _, _ = self.get_season_year('')
@@ -510,7 +525,12 @@ class MalBrowser(BrowserBase):
             params['genres'] = self.genre
 
         trending = database.get(self.get_base_res, 24, f"{self._BASE_URL}/anime", params)
-        return self.process_mal_view(trending, "trending_this_season?page=%d", page)
+        try:
+            from resources.lib import Main
+            base_plugin_url = f"{Main.plugin_url}?page=%d"
+        except Exception:
+            base_plugin_url = "trending_this_season?page=%d"
+        return self.process_mal_view(trending, base_plugin_url, page)
 
     def get_all_time_trending(self, page, format):
         params = {
@@ -537,7 +557,12 @@ class MalBrowser(BrowserBase):
             params['genres'] = self.genre
 
         trending = database.get(self.get_base_res, 24, f"{self._BASE_URL}/anime", params)
-        return self.process_mal_view(trending, "all_time_trending?page=%d", page)
+        try:
+            from resources.lib import Main
+            base_plugin_url = f"{Main.plugin_url}?page=%d"
+        except Exception:
+            base_plugin_url = "all_time_trending?page=%d"
+        return self.process_mal_view(trending, base_plugin_url, page)
 
     def get_popular_last_year(self, page, format):
         _, _, _, _, _, _, _, _, year_start_date_last, year_end_date_last, _, _, _, _ = self.get_season_year('')
