@@ -1348,7 +1348,13 @@ class AniListBrowser(BrowserBase):
             for i in search_adult["ANIME"]:
                 i['title']['english'] = f'{i["title"]["english"]} - {control.colorstr("Adult", "red")}'
             search['ANIME'] += search_adult['ANIME']
-        return self.process_anilist_view(search, f"search_anime/{query}?page=%d", page)
+        try:
+            from resources.lib import Main
+            prefix = Main.plugin_url.split('/', 1)[0]
+            base_plugin_url = f"{prefix}/{query}?page=%d"
+        except Exception:
+            base_plugin_url = f"search_anime/{query}?page=%d"
+        return self.process_anilist_view(search, base_plugin_url, page)
 
     def get_recommendations(self, mal_id, page):
         variables = {
