@@ -24,8 +24,10 @@ class BrowserBase(object):
         try:
             from resources.lib import Main
             plugin_path = getattr(Main, 'plugin_url', '')
-            if plugin_path and plugin_path.startswith(url_path):
-                url_path = plugin_path
+            if plugin_path:
+                plugin_path = plugin_path.split('?', 1)[0]
+                if plugin_path.startswith(url_path):
+                    url_path = plugin_path
         except Exception:
             pass
 
