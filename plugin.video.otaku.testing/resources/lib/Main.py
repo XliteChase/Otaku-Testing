@@ -28,6 +28,7 @@ from resources.lib.WatchlistIntegration import add_watchlist
 
 BROWSER = OtakuBrowser.BROWSER
 plugin_url = control.get_plugin_url(sys.argv[0])
+BROWSER.set_plugin_url(plugin_url)
 
 
 def add_last_watched(items):

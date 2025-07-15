@@ -16,6 +16,7 @@ class AniListBrowser(BrowserBase):
     _BASE_URL = "https://graphql.anilist.co"
 
     def __init__(self):
+        super().__init__()
         self.title_lang = ["romaji", 'english'][control.getInt("titlelanguage")]
         self.perpage = control.getInt('interface.perpage.general.anilist')
         self.year_type = control.getInt('contentyear.menu') if control.getBool('contentyear.bool') else 0
@@ -250,11 +251,10 @@ class AniListBrowser(BrowserBase):
             variables['includedTags'] = self.tag
 
         trending = database.get(self.get_base_res, 24, variables)
-        try:
-            from resources.lib import Main
-            prefix = Main.plugin_url.split('?', 1)[0]
+        if self.plugin_url:
+            prefix = self.plugin_url.split('?', 1)[0]
             base_plugin_url = f"{prefix}?page=%d"
-        except Exception:
+        else:
             base_plugin_url = "trending_last_year?page=%d"
         return self.process_anilist_view(trending, base_plugin_url, page)
 
@@ -287,11 +287,10 @@ class AniListBrowser(BrowserBase):
             variables['includedTags'] = self.tag
 
         trending = database.get(self.get_base_res, 24, variables)
-        try:
-            from resources.lib import Main
-            prefix = Main.plugin_url.split('?', 1)[0]
+        if self.plugin_url:
+            prefix = self.plugin_url.split('?', 1)[0]
             base_plugin_url = f"{prefix}?page=%d"
-        except Exception:
+        else:
             base_plugin_url = "trending_this_year?page=%d"
         return self.process_anilist_view(trending, base_plugin_url, page)
 
@@ -325,11 +324,10 @@ class AniListBrowser(BrowserBase):
             variables['includedTags'] = self.tag
 
         trending = database.get(self.get_base_res, 24, variables)
-        try:
-            from resources.lib import Main
-            prefix = Main.plugin_url.split('?', 1)[0]
+        if self.plugin_url:
+            prefix = self.plugin_url.split('?', 1)[0]
             base_plugin_url = f"{prefix}?page=%d"
-        except Exception:
+        else:
             base_plugin_url = "trending_last_season?page=%d"
         return self.process_anilist_view(trending, base_plugin_url, page)
 
@@ -363,11 +361,10 @@ class AniListBrowser(BrowserBase):
             variables['includedTags'] = self.tag
 
         trending = database.get(self.get_base_res, 24, variables)
-        try:
-            from resources.lib import Main
-            prefix = Main.plugin_url.split('?', 1)[0]
+        if self.plugin_url:
+            prefix = self.plugin_url.split('?', 1)[0]
             base_plugin_url = f"{prefix}?page=%d"
-        except Exception:
+        else:
             base_plugin_url = "trending_this_season?page=%d"
         return self.process_anilist_view(trending, base_plugin_url, page)
 
@@ -398,11 +395,10 @@ class AniListBrowser(BrowserBase):
             variables['includedTags'] = self.tag
 
         trending = database.get(self.get_base_res, 24, variables)
-        try:
-            from resources.lib import Main
-            prefix = Main.plugin_url.split('?', 1)[0]
+        if self.plugin_url:
+            prefix = self.plugin_url.split('?', 1)[0]
             base_plugin_url = f"{prefix}?page=%d"
-        except Exception:
+        else:
             base_plugin_url = "all_time_trending?page=%d"
         return self.process_anilist_view(trending, base_plugin_url, page)
 
@@ -1378,11 +1374,10 @@ class AniListBrowser(BrowserBase):
             for i in search_adult["ANIME"]:
                 i['title']['english'] = f'{i["title"]["english"]} - {control.colorstr("Adult", "red")}'
             search['ANIME'] += search_adult['ANIME']
-        try:
-            from resources.lib import Main
-            prefix = Main.plugin_url.split('/', 1)[0]
+        if self.plugin_url:
+            prefix = self.plugin_url.split('/', 1)[0]
             base_plugin_url = f"{prefix}/{query}?page=%d"
-        except Exception:
+        else:
             base_plugin_url = f"search_anime/{query}?page=%d"
         return self.process_anilist_view(search, base_plugin_url, page)
 
@@ -2553,11 +2548,10 @@ class AniListBrowser(BrowserBase):
         if format:
             variables['format'] = format
 
-        try:
-            from resources.lib import Main
-            prefix = Main.plugin_url.split('/', 1)[0]
+        if self.plugin_url:
+            prefix = self.plugin_url.split('/', 1)[0]
             base_plugin_url = f"{prefix}/{genre_list}/{tag_list}?page=%d"
-        except Exception:
+        else:
             base_plugin_url = f"genres/{genre_list}/{tag_list}?page=%d"
 
         return self.process_genre_view(query, variables, base_plugin_url, page)
