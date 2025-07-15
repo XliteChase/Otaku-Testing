@@ -16,9 +16,7 @@ class BrowserBase(object):
 
         next_page = page + 1
         name = "Next Page (%d)" % next_page
-
         next_url = base_url % next_page
-
         return [utils.allocate_item(name, next_url, True, False, [], 'next.png', {'plot': name}, 'next.png')]
 
     @staticmethod
