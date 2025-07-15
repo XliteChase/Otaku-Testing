@@ -1446,6 +1446,8 @@ def PLAY(payload, params):
     mal_id, episode = payload.rsplit("/")
     source_select = bool(params.get('source_select'))
     rescrape = bool(params.get('rescrape'))
+    last_played = control.getSetting('last_played_source')
+    last_watched = control.getSetting('last_watched_series')
     resume = params.get('resume')
     if rating := params.get('rating'):
         params['rating'] = ast.literal_eval(rating)
@@ -1460,18 +1462,48 @@ def PLAY(payload, params):
 
     sources = OtakuBrowser.get_sources(mal_id, episode, 'show', rescrape, source_select)
     _mock_args = {"mal_id": mal_id, "episode": episode, 'play': True, 'resume': resume, 'context': rescrape or source_select, 'params': params}
-    if control.getSetting('general.playstyle.episode') == '1' or source_select or rescrape:
-        from resources.lib.windows.source_select import SourceSelect
-        if control.getInt('general.dialog') in (5, 6):
-            SourceSelect('source_select_alt.xml', control.ADDON_PATH, actionArgs=_mock_args, sources=sources, rescrape=rescrape).doModal()
+
+    # SmartPlay Enabled
+    if control.getBool('general.smartplay'):
+        # Check if the same series is already being watched
+        if last_watched == mal_id:
+            # If the same series is being watched, check if the last played source is available
+            if last_played == "" or source_select or rescrape:
+                from resources.lib.windows.source_select import SourceSelect
+                if control.getInt('general.dialog') in (5, 6):
+                    SourceSelect('source_select_alt.xml', control.ADDON_PATH, actionArgs=_mock_args, sources=sources, rescrape=rescrape).doModal()
+                else:
+                    SourceSelect('source_select.xml', control.ADDON_PATH, actionArgs=_mock_args, sources=sources, rescrape=rescrape).doModal()
+            else:
+                # If the last played source is available, resolve it directly
+                from resources.lib.windows.resolver import Resolver
+                if control.getInt('general.dialog') in (5, 6):
+                    Resolver('resolver_alt.xml', control.ADDON_PATH, actionArgs=_mock_args).doModal(sources, {}, False)
+                else:
+                    Resolver('resolver.xml', control.ADDON_PATH, actionArgs=_mock_args).doModal(sources, {}, False)
         else:
-            SourceSelect('source_select.xml', control.ADDON_PATH, actionArgs=_mock_args, sources=sources, rescrape=rescrape).doModal()
+            # If a different series is being watched, prompt for source selection and update last watched Series
+            control.setSetting('last_watched_series', mal_id)
+            from resources.lib.windows.source_select import SourceSelect
+            if control.getInt('general.dialog') in (5, 6):
+                SourceSelect('source_select_alt.xml', control.ADDON_PATH, actionArgs=_mock_args, sources=sources, rescrape=rescrape).doModal()
+            else:
+                SourceSelect('source_select.xml', control.ADDON_PATH, actionArgs=_mock_args, sources=sources, rescrape=rescrape).doModal()
+    # SmartPlay Disabled
     else:
-        from resources.lib.windows.resolver import Resolver
-        if control.getInt('general.dialog') in (5, 6):
-            Resolver('resolver_alt.xml', control.ADDON_PATH, actionArgs=_mock_args).doModal(sources, {}, False)
+        if control.getSetting('general.playstyle.episode') == '1' or source_select or rescrape:
+            from resources.lib.windows.source_select import SourceSelect
+            if control.getInt('general.dialog') in (5, 6):
+                SourceSelect('source_select_alt.xml', control.ADDON_PATH, actionArgs=_mock_args, sources=sources, rescrape=rescrape).doModal()
+            else:
+                SourceSelect('source_select.xml', control.ADDON_PATH, actionArgs=_mock_args, sources=sources, rescrape=rescrape).doModal()
         else:
-            Resolver('resolver.xml', control.ADDON_PATH, actionArgs=_mock_args).doModal(sources, {}, False)
+            from resources.lib.windows.resolver import Resolver
+            if control.getInt('general.dialog') in (5, 6):
+                Resolver('resolver_alt.xml', control.ADDON_PATH, actionArgs=_mock_args).doModal(sources, {}, False)
+            else:
+                Resolver('resolver.xml', control.ADDON_PATH, actionArgs=_mock_args).doModal(sources, {}, False)
+
     control.exit_code()
 
 
@@ -3043,6 +3075,7 @@ def SOLVER_INST(payload, params):
 
 @Route('clear_cache')
 def CLEAR_CACHE(payload, params):
+    control.setSetting('last_played_source', None)
     database.cache_clear()
 
 
@@ -3218,7 +3251,6 @@ def TRAKT_SCRIPT(payload, params):
 def PLAYBACK_OPTIONS(payload, params):
     import xbmcgui
     from urllib.parse import urlencode
-    control.print(f"Playback Options called with payload: {payload}")
 
     # Parse the payload to get mal_id and episode
     if payload and '/' in payload:
