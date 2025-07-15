@@ -198,7 +198,8 @@ def TRENDING_LAST_YEAR(payload, params):
     base_key = plugin_url.split('?', 1)[0]
     if base_key in mapping:
         format = mapping[base_key][0] if control.settingids.browser_api == 'mal' else mapping[base_key][1]
-    control.draw_items(BROWSER.get_trending_last_year(page, format), 'tvshows')
+    prefix = plugin_url.split('?', 1)[0]
+    control.draw_items(BROWSER.get_trending_last_year(page, format, prefix), 'tvshows')
 
 
 @Route('trending_this_year')
@@ -224,7 +225,8 @@ def TRENDING_THIS_YEAR(payload, params):
     base_key = plugin_url.split('?', 1)[0]
     if base_key in mapping:
         format = mapping[base_key][0] if control.settingids.browser_api == 'mal' else mapping[base_key][1]
-    control.draw_items(BROWSER.get_trending_this_year(page, format), 'tvshows')
+    prefix = plugin_url.split('?', 1)[0]
+    control.draw_items(BROWSER.get_trending_this_year(page, format, prefix), 'tvshows')
 
 
 @Route('trending_last_season')
@@ -250,7 +252,8 @@ def TRENDING_LAST_SEASON(payload, params):
     base_key = plugin_url.split('?', 1)[0]
     if base_key in mapping:
         format = mapping[base_key][0] if control.settingids.browser_api == 'mal' else mapping[base_key][1]
-    control.draw_items(BROWSER.get_trending_last_season(page, format), 'tvshows')
+    prefix = plugin_url.split('?', 1)[0]
+    control.draw_items(BROWSER.get_trending_last_season(page, format, prefix), 'tvshows')
 
 
 @Route('trending_this_season')
@@ -275,7 +278,8 @@ def TRENDING_THIS_SEASON(payload, params):
     format = None
     if plugin_url in mapping:
         format = mapping[plugin_url][0] if control.settingids.browser_api == 'mal' else mapping[plugin_url][1]
-    control.draw_items(BROWSER.get_trending_this_season(page, format), 'tvshows')
+    prefix = plugin_url.split('?', 1)[0]
+    control.draw_items(BROWSER.get_trending_this_season(page, format, prefix), 'tvshows')
 
 
 @Route('all_time_trending')
@@ -300,7 +304,8 @@ def ALL_TIME_TRENDING(payload, params):
     format = None
     if plugin_url in mapping:
         format = mapping[plugin_url][0] if control.settingids.browser_api == 'mal' else mapping[plugin_url][1]
-    control.draw_items(BROWSER.get_all_time_trending(page, format), 'tvshows')
+    prefix = plugin_url.split('?', 1)[0]
+    control.draw_items(BROWSER.get_all_time_trending(page, format, prefix), 'tvshows')
 
 
 @Route('popular_last_year')
@@ -728,7 +733,8 @@ def GENRES(payload, params):
     if base_key in mapping:
         format = mapping[base_key][0] if control.settingids.browser_api == 'mal' else mapping[base_key][1]
     if genres or tags:
-        control.draw_items(BROWSER.genres_payload(genres, tags, page, format), 'tvshows')
+        prefix = plugin_url.split('/', 1)[0]
+        control.draw_items(BROWSER.genres_payload(genres, tags, page, format, prefix), 'tvshows')
     else:
         control.draw_items(BROWSER.get_genres(page, format), 'tvshows')
 
@@ -1356,7 +1362,8 @@ def SEARCH(payload, params):
             return control.draw_items([], 'tvshows')
         if control.getInt('searchhistory') == 0:
             database.addSearchHistory(query, type)
-    control.draw_items(BROWSER.get_search(query, page, format), 'tvshows')
+    prefix = plugin_url.split('/', 1)[0]
+    control.draw_items(BROWSER.get_search(query, page, format, prefix), 'tvshows')
 
 
 @Route('play/*')
