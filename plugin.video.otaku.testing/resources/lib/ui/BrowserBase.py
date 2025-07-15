@@ -9,8 +9,13 @@ from resources.lib.ui import client, control, utils
 class BrowserBase(object):
     _BASE_URL = None
 
-    @staticmethod
-    def handle_paging(hasnextpage, base_url, page):
+    def __init__(self):
+        self.plugin_url = None
+
+    def set_plugin_url(self, plugin_url):
+        self.plugin_url = plugin_url
+
+    def handle_paging(self, hasnextpage, base_url, page):
         if not hasnextpage or not control.is_addon_visible() and control.getBool('widget.hide.nextpage'):
             return []
 
@@ -21,13 +26,9 @@ class BrowserBase(object):
 
         url_path, sep, query = next_url.partition('?')
 
-        try:
-            from resources.lib import Main
-            plugin_path = getattr(Main, 'plugin_url', '')
-            if plugin_path and plugin_path.startswith(url_path):
-                url_path = plugin_path
-        except Exception:
-            pass
+        plugin_path = getattr(self, 'plugin_url', '')
+        if plugin_path and plugin_path.startswith(url_path):
+            url_path = plugin_path
 
         next_url = url_path + (sep + query if query else '')
 
