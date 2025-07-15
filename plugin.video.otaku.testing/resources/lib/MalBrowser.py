@@ -320,7 +320,7 @@ class MalBrowser(BrowserBase):
         all_results = list(map(mapfunc, watch_order_list))
         return all_results
 
-    def get_search(self, query, page, format):
+    def get_search(self, query, page, format, prefix=None):
         params = {
             "q": query,
             "page": page,
@@ -335,12 +335,7 @@ class MalBrowser(BrowserBase):
             params['type'] = self.format_in_type
 
         search = database.get(self.get_base_res, 24, f"{self._BASE_URL}/anime", params)
-        try:
-            from resources.lib import Main
-            prefix = Main.plugin_url.split('/', 1)[0]
-            base_plugin_url = f"{prefix}/{query}?page=%d"
-        except Exception:
-            base_plugin_url = f"search_anime/{query}?page=%d"
+        base_plugin_url = f"{prefix}/{query}?page=%d" if prefix else f"search_anime/{query}?page=%d"
         return self.process_mal_view(search, base_plugin_url, page)
 
     def get_airing_last_season(self, page, format):
@@ -394,7 +389,7 @@ class MalBrowser(BrowserBase):
         airing = database.get(self.get_base_res, 24, f"{self._BASE_URL}/seasons/{year}/{season}", params)
         return self.process_mal_view(airing, "airing_next_season?page=%d", page)
 
-    def get_trending_last_year(self, page, format):
+    def get_trending_last_year(self, page, format, prefix=None):
         _, _, _, _, _, _, _, _, year_start_date_last, year_end_date_last, _, _, _, _ = self.get_season_year('last')
         params = {
             'page': page,
@@ -422,15 +417,10 @@ class MalBrowser(BrowserBase):
             params['genres'] = self.genre
 
         trending = database.get(self.get_base_res, 24, f"{self._BASE_URL}/anime", params)
-        try:
-            from resources.lib import Main
-            prefix = Main.plugin_url.split('?', 1)[0]
-            base_plugin_url = f"{prefix}?page=%d"
-        except Exception:
-            base_plugin_url = "trending_last_year?page=%d"
+        base_plugin_url = f"{prefix}?page=%d" if prefix else "trending_last_year?page=%d"
         return self.process_mal_view(trending, base_plugin_url, page)
 
-    def get_trending_this_year(self, page, format):
+    def get_trending_this_year(self, page, format, prefix=None):
         _, _, year_start_date, _, _, _, _, _, _, _, _, _, _, _ = self.get_season_year('')
         params = {
             'page': page,
@@ -457,15 +447,10 @@ class MalBrowser(BrowserBase):
             params['genres'] = self.genre
 
         trending = database.get(self.get_base_res, 24, f"{self._BASE_URL}/anime", params)
-        try:
-            from resources.lib import Main
-            prefix = Main.plugin_url.split('?', 1)[0]
-            base_plugin_url = f"{prefix}?page=%d"
-        except Exception:
-            base_plugin_url = "trending_this_year?page=%d"
+        base_plugin_url = f"{prefix}?page=%d" if prefix else "trending_this_year?page=%d"
         return self.process_mal_view(trending, base_plugin_url, page)
 
-    def get_trending_last_season(self, page, format):
+    def get_trending_last_season(self, page, format, prefix=None):
         _, _, _, _, _, _, season_start_date_last, season_end_date_last, _, _, _, _, _, _ = self.get_season_year('')
         params = {
             'page': page,
@@ -493,15 +478,10 @@ class MalBrowser(BrowserBase):
             params['genres'] = self.genre
 
         trending = database.get(self.get_base_res, 24, f"{self._BASE_URL}/anime", params)
-        try:
-            from resources.lib import Main
-            prefix = Main.plugin_url.split('?', 1)[0]
-            base_plugin_url = f"{prefix}?page=%d"
-        except Exception:
-            base_plugin_url = "trending_last_season?page=%d"
+        base_plugin_url = f"{prefix}?page=%d" if prefix else "trending_last_season?page=%d"
         return self.process_mal_view(trending, base_plugin_url, page)
 
-    def get_trending_this_season(self, page, format):
+    def get_trending_this_season(self, page, format, prefix=None):
         _, _, _, _, season_start_date, _, _, _, _, _, _, _, _, _ = self.get_season_year('')
         params = {
             'page': page,
@@ -528,15 +508,10 @@ class MalBrowser(BrowserBase):
             params['genres'] = self.genre
 
         trending = database.get(self.get_base_res, 24, f"{self._BASE_URL}/anime", params)
-        try:
-            from resources.lib import Main
-            prefix = Main.plugin_url.split('?', 1)[0]
-            base_plugin_url = f"{prefix}?page=%d"
-        except Exception:
-            base_plugin_url = "trending_this_season?page=%d"
+        base_plugin_url = f"{prefix}?page=%d" if prefix else "trending_this_season?page=%d"
         return self.process_mal_view(trending, base_plugin_url, page)
 
-    def get_all_time_trending(self, page, format):
+    def get_all_time_trending(self, page, format, prefix=None):
         params = {
             'page': page,
             'limit': self.perpage,
@@ -561,12 +536,7 @@ class MalBrowser(BrowserBase):
             params['genres'] = self.genre
 
         trending = database.get(self.get_base_res, 24, f"{self._BASE_URL}/anime", params)
-        try:
-            from resources.lib import Main
-            prefix = Main.plugin_url.split('?', 1)[0]
-            base_plugin_url = f"{prefix}?page=%d"
-        except Exception:
-            base_plugin_url = "all_time_trending?page=%d"
+        base_plugin_url = f"{prefix}?page=%d" if prefix else "all_time_trending?page=%d"
         return self.process_mal_view(trending, base_plugin_url, page)
 
     def get_popular_last_year(self, page, format):
@@ -1583,7 +1553,7 @@ class MalBrowser(BrowserBase):
                 genre_display_list.append(str(genre[selection]['mal_id']))
         return self.genres_payload(genre_display_list, [], page, format)
 
-    def genres_payload(self, genre_list, tag_list, page, format):
+    def genres_payload(self, genre_list, tag_list, page, format, prefix=None):
         if not isinstance(genre_list, list):
             genre_list = ast.literal_eval(genre_list)
 
@@ -1609,12 +1579,7 @@ class MalBrowser(BrowserBase):
             params['rating'] = self.rating
 
         genres = database.get(self.get_base_res, 24, f'{self._BASE_URL}/anime', params)
-        try:
-            from resources.lib import Main
-            prefix = Main.plugin_url.split('/', 1)[0]
-            base_plugin_url = f"{prefix}/{genre_list}/{tag_list}?page=%d"
-        except Exception:
-            base_plugin_url = f"genres/{genre_list}/{tag_list}?page=%d"
+        base_plugin_url = f"{prefix}/{genre_list}/{tag_list}?page=%d" if prefix else f"genres/{genre_list}/{tag_list}?page=%d"
         return self.process_mal_view(genres, base_plugin_url, page)
 
     @div_flavor

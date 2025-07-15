@@ -19,18 +19,6 @@ class BrowserBase(object):
 
         next_url = base_url % next_page
 
-        url_path, sep, query = next_url.partition('?')
-
-        try:
-            from resources.lib import Main
-            plugin_path = getattr(Main, 'plugin_url', '')
-            if plugin_path and plugin_path.startswith(url_path):
-                url_path = plugin_path
-        except Exception:
-            pass
-
-        next_url = url_path + (sep + query if query else '')
-
         return [utils.allocate_item(name, next_url, True, False, [], 'next.png', {'plot': name}, 'next.png')]
 
     @staticmethod
