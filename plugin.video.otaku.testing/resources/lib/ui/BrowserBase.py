@@ -17,6 +17,7 @@ class BrowserBase(object):
         next_page = page + 1
         name = "Next Page (%d)" % next_page
 
+
         next_url = base_url % next_page
 
         url_path, sep, query = next_url.partition('?')
@@ -30,6 +31,7 @@ class BrowserBase(object):
             pass
 
         next_url = url_path + (sep + query if query else '')
+
 
         return [utils.allocate_item(name, next_url, True, False, [], 'next.png', {'plot': name}, 'next.png')]
 
