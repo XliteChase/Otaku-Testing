@@ -1573,7 +1573,15 @@ class MalBrowser(BrowserBase):
             params['rating'] = self.rating
 
         genres = database.get(self.get_base_res, 24, f'{self._BASE_URL}/anime', params)
-        return self.process_mal_view(genres, f"genres/{genre_list}/{tag_list}?page=%d", page)
+
+        try:
+            from resources.lib import Main
+            prefix = Main.plugin_url.split('/', 1)[0]
+            base_plugin_url = f"{prefix}/{genre_list}/{tag_list}?page=%d"
+        except Exception:
+            base_plugin_url = f"genres/{genre_list}/{tag_list}?page=%d"
+
+        return self.process_mal_view(genres, base_plugin_url, page)
 
     @div_flavor
     def base_mal_view(self, res, completed=None, mal_dub=None):

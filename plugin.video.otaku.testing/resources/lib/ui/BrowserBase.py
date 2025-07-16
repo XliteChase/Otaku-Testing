@@ -15,7 +15,19 @@ class BrowserBase(object):
             return []
         next_page = page + 1
         name = "Next Page (%d)" % next_page
-        return [utils.allocate_item(name, base_url % next_page, True, False, [], 'next.png', {'plot': name}, 'next.png')]
+        next_url = base_url % next_page
+        url_path, sep, query = next_url.partition('?')
+
+        try:
+            from resources.lib import Main
+            plugin_path = getattr(Main, 'plugin_url', '')
+            if plugin_path and plugin_path.startswith(url_path):
+                url_path = plugin_path
+        except Exception:
+            pass
+
+        next_url = url_path + (sep + query if query else '')
+        return [utils.allocate_item(name, next_url, True, False, [], 'next.png', {'plot': name}, 'next.png')]
 
     @staticmethod
     def open_completed():
